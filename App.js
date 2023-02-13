@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {Component} from 'react';
-import { Text, View, StyleSheet, TextInput, Button, Image, TouchableOpacity, Alertm,FlatList} from 'react-native';
+import { Text, View, StyleSheet, TextInput, Button, Image, TouchableOpacity, Alert,FlatList,ActivityIndicator} from 'react-native';
 import api from './src/services/api'
 import Filmes from './src/Filmes';
 
@@ -8,7 +8,8 @@ class App extends Component {
   constructor(props){
     super(props);
     this.state={
-      filmes:[]
+      filmes:[],
+      loading:true,
 
     }
  
@@ -17,33 +18,44 @@ class App extends Component {
   async componentDidMount(){
     const respone = await api.get('r-api/?api=filmes')
     this.setState({
-      filmes:respone.data
+      filmes:respone.data,
+      loading:false,
     })
   }
 
 
 
-  render(){  
-  return (
-    <View style={styles.container}>
-      <FlatList
-        data={this.state.filmes}
-        keyExtractor={item=>item.id.toString()}
-        renderItem={({item})=> <Filmes data={item}/>}
-      >
-      </FlatList>
+  render(){
+    if(this.loading){
+      return (
+        <View style={{alignItems:'center', justifyContent:'center', flex:1}}>
+          <ActivityIndicator color="blue" size={40}>
+          </ActivityIndicator>
+        </View>
+      );
 
-    </View>
-  );
+    } 
+    else{
+      return (
+        <View style={styles.container}>
+          <FlatList
+            data={this.state.filmes}
+            keyExtractor={item=>item.id.toString()}
+            renderItem={({item})=> <Filmes data={item}/>}
+          >
+          </FlatList>
+    
+        </View>
+      );
+
+    }
 }
 }
 
 const styles = StyleSheet.create({
   container:{
     flex:1,
-    paddingTop:20,
-    alignItems:'center',
-    justifyContent:'center'
+
   },
   
 })
